@@ -1,0 +1,131 @@
+ 
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-multiple-lable
+spec:
+  podSelector:
+    matchLabels:
+      app: bookstore
+      class: cka
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: bookstore
+          course: cka
+    - podSelector:
+        matchLabels:
+          app: bookstore
+          course: redhat
+    - podSelector:
+        matchLabels:
+          app: bookstore
+          course: cca
+
+---
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: bookstore
+    class: cka
+  name: web
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: bookstore
+    class: cka
+status:
+  loadBalancer: {}
+---
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    app: bookstore
+    class: cka
+  name: web
+spec:
+  containers:
+  - image: docker.io/httpd
+    name: apiserver
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+
+---
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+    name: app1
+    labels: 
+        app: bookstore
+        course: cka
+spec:
+    containers:
+    - name: command-demo-container
+      image: alpine
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo hello; sleep 10;done"]
+
+---
+---
+ 
+apiVersion: v1
+kind: Pod
+metadata:
+    name: app2
+    labels: 
+        app: bookstore
+        course: redhat
+spec:
+    containers:
+    - name: command-demo-container2
+      image: alpine
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo hello; sleep 10;done"]
+
+---
+---
+apiVersion: v1
+kind: Pod
+metadata:
+    name: app3
+    labels: 
+        app: bookstore
+        course: cca
+spec:
+    containers:
+    - name: command-demo-container3
+      image: alpine
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo hello; sleep 10;done"]
+
+---
+---
+apiVersion: v1
+kind: Pod
+metadata:
+    name: app4
+    labels: 
+        app: bookstore
+        course: ccca
+spec:
+    containers:
+    - name: command-demo-container3
+      image: alpine
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do echo hello; sleep 10;done"]
